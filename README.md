@@ -1,16 +1,16 @@
 # kafka-demo
 # kafka-demo
 
-#Dependancy
+# Dependancy
 Kafka 2.8
 JDK 17
 mvn
 
-#Kafka
+# Kafka
 docker-compose up -d
 create a topic called NewTopic
 
-#GUI tool
+# GUI tool
 OffsetExporer 2.2
 
 mvn clean compile install
@@ -18,5 +18,5 @@ mvn springboot:run
 
 curl http://localhost:8081/publish/<message>/<no of replicas>
 
-#ref
+# ref
 https://www.baeldung.com/ops/kafka-docker-setup
