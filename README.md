@@ -1,5 +1,4 @@
 # kafka-demo
-# kafka-demo
 
 # Dependancy
 Kafka 2.8
