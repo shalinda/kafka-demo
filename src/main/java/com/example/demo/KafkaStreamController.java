@@ -128,15 +128,44 @@ public class KafkaStreamController {
         Properties props = new Properties();
         props.put(StreamsConfig.APPLICATION_ID_CONFIG, "stream-table-inner-join");
         props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:29092");
+        props.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.Integer.getClass());
+        props.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass());
+
+        final StreamsBuilder builder = new StreamsBuilder();
+
+        KStream<Integer, String> leftSource = builder.stream("my-kafka-left-stream-topic");
+        KTable<Integer, String> rightSource = builder.table("my-kafka-right-stream-topic");
+
+        KStream<Integer, String> joined = leftSource.join(rightSource,
+                (leftValue, rightValue) -> "left=" + leftValue + ", right=" + rightValue /* ValueJoiner */
+        );
+
+        joined.to("my-kafka-stream-table-inner-join-out");
+
+        final Topology topology = builder.build();
+        streamTableInnerJoin = new KafkaStreams(topology, props);
+        streamTableInnerJoin.start();
+
+    }
+
+    @RequestMapping("/startStreamGKTableLeftJoin/")
+    public void startStreamGKTableLeftJoin() {
+
+        stop();
+
+        Properties props = new Properties();
+        props.put(StreamsConfig.APPLICATION_ID_CONFIG, "stream-table-inner-join");
+        props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:29092");
         props.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.Integer().getClass());
         props.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass());
 
         final StreamsBuilder builder = new StreamsBuilder();
 
-        KStream<String, String> leftSource = builder.stream("my-kafka-left-stream-topic");
-        KTable<String, String> rightSource = builder.table("my-kafka-right-stream-topic");
+        KStream<Integer, String> leftSource = builder.stream("my-kafka-left-stream-topic");
+        GlobalKTable<Integer, String> rightSource = builder.globalTable("my-kafka-right-stream-topic");
 
-        KStream<String, String> joined = leftSource.join(rightSource,
+        KStream<Integer, String> joined = leftSource.leftJoin(rightSource,
+                (Integer bid, String bvalue) -> bid,
                 (leftValue, rightValue) -> "left=" + leftValue + ", right=" + rightValue /* ValueJoiner */
         );
 
