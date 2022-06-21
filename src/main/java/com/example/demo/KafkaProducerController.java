@@ -19,12 +19,12 @@ public class KafkaProducerController {
     static {
         LEFT = new HashMap<>();
         LEFT.put(1, null);
-        LEFT.put(3, "A");
-        LEFT.put(5, "B");
+        LEFT.put(3, "3,A");
+        LEFT.put(5, "5,B");
         LEFT.put(7, null);
-        LEFT.put(9, "C");
+        LEFT.put(9, "9,C");
         LEFT.put(12, null);
-        LEFT.put(15, "x");
+        LEFT.put(15, "15,x");
     }
 
     private static final Map<Integer, String> RIGHT;

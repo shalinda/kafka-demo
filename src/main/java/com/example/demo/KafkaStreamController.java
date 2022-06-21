@@ -128,7 +128,7 @@ public class KafkaStreamController {
         Properties props = new Properties();
         props.put(StreamsConfig.APPLICATION_ID_CONFIG, "stream-table-inner-join");
         props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:29092");
-        props.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.Integer.getClass());
+        props.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.Integer().getClass());
         props.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass());
 
         final StreamsBuilder builder = new StreamsBuilder();
@@ -163,13 +163,19 @@ public class KafkaStreamController {
 
         KStream<Integer, String> leftSource = builder.stream("my-kafka-left-stream-topic");
         GlobalKTable<Integer, String> rightSource = builder.globalTable("my-kafka-right-stream-topic");
-
+        // b= left
         KStream<Integer, String> joined = leftSource.leftJoin(rightSource,
-                (Integer bid, String bvalue) -> bid,
+                (Integer bid, String bvalue) -> {
+                    if (bvalue == null) return null;
+                    String[] arr = bvalue.split(",");
+                    if (arr.length == 0) return null;
+                    Integer bfk = Integer.parseInt(arr[0]);
+                    return bfk;
+                },
                 (leftValue, rightValue) -> "left=" + leftValue + ", right=" + rightValue /* ValueJoiner */
         );
 
-        joined.to("my-kafka-stream-table-inner-join-out");
+        joined.to("my-kafka-stream-gktable-left-join-out");
 
         final Topology topology = builder.build();
         streamTableInnerJoin = new KafkaStreams(topology, props);
