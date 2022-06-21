@@ -24,45 +24,45 @@ public class KafkaProducerController {
         LEFT.put(7, null);
         LEFT.put(9, "C");
         LEFT.put(12, null);
-        LEFT.put(15, "D");
+        LEFT.put(15, "x");
     }
 
     private static final Map<Integer, String> RIGHT;
     static {
         RIGHT = new HashMap<>();
         RIGHT.put(2, null);
-        RIGHT.put(4, "a");
-        RIGHT.put(6, "b");
+        RIGHT.put(3, "a");
+        RIGHT.put(5, "b");
         RIGHT.put(8, null);
-        RIGHT.put(10, "c");
+//        RIGHT.put(9, "c");
         RIGHT.put(11, null);
         RIGHT.put(13, null);
-        RIGHT.put(14, "d");
+        RIGHT.put(15, "D");
     }
 
     @RequestMapping("/sendMessages/")
     public void sendMessages() {
 
         Properties props = new Properties();
-        props.put("bootstrap.servers", "localhost:9092");
+        props.put("bootstrap.servers", "localhost:29092,localhost:39092");
         props.put("acks", "all");
-        props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+        props.put("key.serializer", "org.apache.kafka.common.serialization.IntegerSerializer");
         props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
 
-        Producer<String, String> producer = new KafkaProducer<>(props);
+        Producer<Integer, String> producer = new KafkaProducer<>(props);
 
         try {
             for (int i = 0; i < 15; i++) {
                 // Every 10 seconds send a message
-                try {
-                    Thread.sleep(10000);
-                } catch (InterruptedException e) {}
+//                try {
+//                    Thread.sleep(500);
+//                } catch (InterruptedException e) {}
 
                 if (LEFT.containsKey(i + 1)) {
-                    producer.send(new ProducerRecord<String, String>("my-kafka-left-stream-topic", KEY, LEFT.get(i + 1)));
+                    producer.send(new ProducerRecord<Integer, String>("my-kafka-left-stream-topic", (i + 1), LEFT.get(i + 1)));
                 }
                 if (RIGHT.containsKey(i + 1)) {
-                    producer.send(new ProducerRecord<String, String>("my-kafka-right-stream-topic", KEY, RIGHT.get(i + 1)));
+                    producer.send(new ProducerRecord<Integer, String>("my-kafka-right-stream-topic", (i + 1), RIGHT.get(i + 1)));
                 }
 
             }

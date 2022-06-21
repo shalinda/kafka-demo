@@ -23,11 +23,12 @@ curl http://localhost:8081/publish/message/no-of-replicas
 
 # ref
 https://www.baeldung.com/ops/kafka-docker-setup
+https://mydeveloperplanet.com/2019/10/30/kafka-streams-joins-explored/
 
 # Kafaka Streams
 
 Need below dependancies
-
+docker exec into one of the kakfka nodes created with the docker-compose
 ./kafka-topics.sh --create --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1 --topic my-kafka-left-stream-topic
 
 ./kafka-topics.sh --create --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1 --topic my-kafka-right-stream-topic
